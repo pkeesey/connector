@@ -143,7 +143,10 @@ if(!jQuery)throw new Error("Bootstrap requires jQuery");+function(a){"use strict
   var insuranceList = new List('insurance-list-wrapper', listOptions);
   var physicianList = new List('physician-list-wrapper', listOptions);
   var pharmacyList = new List('pharmacy-list-wrapper', listOptions);
+  var labList = new List('lab-list-wrapper', listOptions);
   var immunizationList = new List('immunization-list-wrapper', listOptions);
+  //TODO bring this back once we replace the "coming soon" with actual HIE listings
+  // var hieList = new List('hie-list-wrapper', listOptions);
 
 
   // HIDE/SHOW the list depending on if there is something in the search/filter input
@@ -156,12 +159,21 @@ if(!jQuery)throw new Error("Bootstrap requires jQuery");+function(a){"use strict
     // }
   // });
 
+  $('body').on('input keychange', '.provider-search-name', function(evt) {
+    //when free text searching, clear out the state filter (which is only on physicianList)
+    var $pvs = $('.provider-search-state')
+    if ($pvs.val() !== 'false') {
+      $pvs.val('false');
+      physicianList.filter();
+    }
+  });
+
   $('body').on('change', '.provider-search-state', function(evt) {
     var $self = $(this);
     var selState = $self.val();
     //TODO standardize on DC vs District of Columbia
     if (selState == 'false') {
-      eval($self.closest('.tab-pane').attr('id') + 'List.filter()');
+      physicianList.filter();
       return false;
     }
     if (selState == "district of columbia") selState = "dc"
